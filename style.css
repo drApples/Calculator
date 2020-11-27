@@ -22,6 +22,8 @@ body{
     width: 648px;
     margin: 0;
     padding-right: 2px;
+    text-align: right;
+    font-size: 40px;
 }
 
 #outputBottom{
