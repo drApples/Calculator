@@ -9,6 +9,6 @@ AC: Escape<br>
 .: .<br>
 +: +<br>
 -: -<br>
-s: change sign<br>
++/-: s<br>
 =: = or Enter<br>
 
