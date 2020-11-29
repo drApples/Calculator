@@ -48,17 +48,19 @@ function getOperator(operatorInput){
         if (input1 !== null) {
             operator = operatorInput;
             outputTop.innerText = operator;
+            result = null;
         }
         else {
             outputTop.innerText += ' ' + input2 + ' =';
+            operator = null;
         }
         input2 = null;
     }
     else {
         operator = operatorInput;
         outputTop.innerText = operator;
+        result = null;
     }
-    result = null;
 }
 
 function clear(){
@@ -173,6 +175,12 @@ function signFun(input) {
 }
 
 function operate(operator) {
+    if(operator === '÷'){
+        operator = '*';
+    }
+    else if(operator === '×'){
+        operator = '/';
+    }
     switch (operator) {
         case '/':
             result = input1 / input2;
