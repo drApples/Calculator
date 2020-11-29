@@ -8,10 +8,12 @@ const equal = document.getElementById('equal');
 const percentage = document.getElementById('percentage');
 const addDecimal = document.getElementById('addDecimal');
 const changeSign = document.getElementById('changeSign');
+const buttons = document.querySelectorAll('button');
 let input1 = '0';
 let input2 = null;
 let operator = null;
 let result = null;
+let object;
 
 percentage.addEventListener('click', () => modifyInput(percentFun));
 addDecimal.addEventListener('click', () => modifyInput(decimalFun));
@@ -23,6 +25,7 @@ window.addEventListener('keydown', e => keysupport(e.key));
 
 numbers.forEach(element => element.addEventListener('click', e => chooseInput(e.target.id)));
 operators.forEach(element => element.addEventListener('click', e => getOperator(e.target.attributes['data-symbol'].value)));
+buttons.forEach(element => element.addEventListener('click', e => addTransition(e.target)))
 
 function chooseInput(number) {
     if (operator === null) {
@@ -39,7 +42,7 @@ function chooseInput(number) {
     }
 }
 
-function getOperator(operatorInput){
+function getOperator(operatorInput) {
     if (input1 === null) {
         return;
     }
@@ -63,7 +66,7 @@ function getOperator(operatorInput){
     }
 }
 
-function clear(){
+function clear() {
     input1 = '0';
     input2 = null;
     operator = null;
@@ -175,11 +178,11 @@ function signFun(input) {
 }
 
 function operate(operator) {
-    if(operator === '÷'){
-        operator = '*';
-    }
-    else if(operator === '×'){
+    if (operator === '÷') {
         operator = '/';
+    }
+    else if (operator === '×') {
+        operator = '*';
     }
     switch (operator) {
         case '/':
@@ -251,29 +254,18 @@ function fitNumber(string) {
     return string.substr(0, 10) + `${+string.charAt(10) + 1}`;
 }
 
+function addTransition(object) {
+    object.classList.add('transition');
+    setTimeout(() => object.classList.remove('transition'), 150);
+}
+
 function keysupport(key) {
-    if(/\d/.test(key)){
-        chooseInput(key);
-    }
-    else if(/\/|\+|-|\*/.test(key)){
-        getOperator(key);
-    }
-    else if(key === 'Enter' || key === '='){
-        equalFun();
-    }
-    else if(key === 'Escape'){
-        clear();
-    }
-    else if(key === 'Backspace'){
-        modifyInput(deleteNum);
-    }
-    else if(key === '%'){
-        modifyInput(percentFun);
-    }
-    else if(key === '.'){
-        modifyInput(decimalFun);
-    }
-    else if(key === 's'){
-        modifyInput(signFun);
+    buttons.forEach(object => {
+        if (object.attributes['data-key'].value === key) {
+            object.click();
+        }
+    })
+    if (key === 'Enter') {
+        buttons[19].click();
     }
 }
