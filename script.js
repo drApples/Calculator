@@ -247,7 +247,7 @@ function fitNumber(string) {
             i--;
         } while (string.charAt(i) === '9')
         if (i >= 2) {
-            return string.substr(0, i - 1) + `${+string.charAt(i) + 1}`;
+            return string.substr(0, i) + `${+string.charAt(i) + 1}`;
         }
         return '1';
     }
