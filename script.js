@@ -14,80 +14,76 @@ let operator = null;
 let result = null;
 
 percentage.addEventListener('click', () => modifyInput(percentFun));
-//addDecimal.addEventListener('click', decimalFun);
-//changeSign.addEventListener('click', signFun);
+addDecimal.addEventListener('click', () => modifyInput(decimalFun));
+changeSign.addEventListener('click', () => modifyInput(signFun));
+clearAll.addEventListener('click', clear);
+deleteNumber.addEventListener('click', () => modifyInput(deleteNum));
+equal.addEventListener('click', equalFun);
+window.addEventListener('keydown', e => keysupport(e.key));
 
-numbers.forEach(element => element.addEventListener('click', e => {
+numbers.forEach(element => element.addEventListener('click', e => chooseInput(e.target.id)));
+operators.forEach(element => element.addEventListener('click', e => getOperator(e.target.attributes['data-symbol'].value)));
+
+function chooseInput(number) {
     if (operator === null) {
-        input1 = takenumber(e.target.id, input1);
+        input1 = takeNumber(number, input1);
     }
     else {
         if (input2 === null) {
+            if (/\.$/.test(input1)) {
+                input1 = input1.substr(0, input1.length - 1);
+            }
             outputTop.innerText = input1 + ' ' + operator;
         }
-        input2 = takenumber(e.target.id, input2);
+        input2 = takeNumber(number, input2);
     }
-}))
+}
 
-operators.forEach(element => element.addEventListener('click', e => {
+function getOperator(operatorInput){
     if (input1 === null) {
         return;
     }
-    operator = e.target.attributes['data-symbol'].value;
     if (input2 !== null) {
         operate(operator);
-    }
-    outputTop.innerText = operator;
-    result = null;
-}))
-
-deleteNumber.addEventListener('click', () => {
-    if (input2 !== null) {
-        input2 = input2.substr(0, input2.length - 1);
-        outputBot.innerText = input2;
-    }
-    else if (operator !== null) {
-        operator = null;
-        outputTop.innerText = '';
+        if (input1 !== null) {
+            operator = operatorInput;
+            outputTop.innerText = operator;
+        }
+        else {
+            outputTop.innerText += ' ' + input2 + ' =';
+        }
+        input2 = null;
     }
     else {
-        if (result === null) {
-            input1 = input1.substr(0, input1.length - 1);
-            outputBot.innerText = input1;
-        }
+        operator = operatorInput;
+        outputTop.innerText = operator;
     }
+    result = null;
 }
-)
 
-clearAll.addEventListener('click', () => {
+function clear(){
     input1 = '0';
     input2 = null;
     operator = null;
     result = null;
     outputTop.innerText = '';
     outputBot.innerText = input1;
-})
+}
 
-equal.addEventListener('click', () => {
+function equalFun() {
     if (operator === null || input2 === null) {
         return;
+    }
+    if (/\.$/.test(input2)) {
+        input2 = input2.substr(0, input2.length - 1);
     }
     outputTop.innerText += ' ' + input2 + ' =';
     operate(operator);
     operator = null;
-});
-
-function modifyInput(fun) {
-    if (input2 === null && operator === null && input1 !== null) {
-        input1 = fun(input1);
-    }
-    else if (input2 !== null) {
-        input2 = fun(input2);
-    }
-
+    input2 = null;
 }
 
-function takenumber(number, input) {
+function takeNumber(number, input) {
     if (input === '0' || result || input === null) {
         input = number;
         if (result !== null) {
@@ -105,6 +101,39 @@ function takenumber(number, input) {
     return input;
 }
 
+function modifyInput(fun) {
+    let input;
+    if (input2 === null && operator === null && input1 !== null) {
+        input = fun(input1);
+        if (input !== null && input !== 'deleteResult') {
+            input1 = input;
+        }
+        if (result !== null && input !== null) {
+            result = null;
+            outputTop.innerText = '';
+        }
+    }
+    else if (input2 !== null) {
+        input = fun(input2);
+        if (input !== null && input !== 'deleteResult') {
+            input2 = input;
+        }
+    }
+}
+
+function deleteNum(input) {
+    if (result !== null) {
+        return 'deleteResult';
+    }
+    if (input.length >= 2 && input.charAt(0) !== '-' || input.length >= 3) {
+        input = input.substr(0, input.length - 1);
+        outputBot.innerText = input;
+        return input;
+    }
+    outputBot.innerText = '0';
+    return '0';
+}
+
 function percentFun(input) {
     if ((input < 1 && input >= 1e-7) || (input > -1 && input <= -1e-6)) {
         input = input.replace('.', '.00');
@@ -113,12 +142,33 @@ function percentFun(input) {
         input = `${input / 100}`;
     }
     else {
-        return input;
+        return null;
     }
     if (input.length > 11) {
         input = fitNumber(input);
     }
     outputBot.innerText = input;
+    return input;
+}
+
+function decimalFun(input) {
+    if (!input.includes('.') && input.length < 10) {
+        outputBot.innerText = input + '.';
+        return input + '.';
+    }
+    return null;
+}
+
+function signFun(input) {
+    if (input === '0' || (input.length === 11 && input > 0)) {
+        return null;
+    }
+    if (input.charAt(0) !== '-') {
+        outputBot.innerText = '-' + input;
+        return '-' + input;
+    }
+    input = input.substr(1, input.length - 1);
+    outputBot.innerText = input
     return input;
 }
 
@@ -137,19 +187,18 @@ function operate(operator) {
             result = input1 - input2;
     }
     formatOutput(result);
-    input2 = null;
 }
 
 function formatOutput(result) {
     let string = '';
-    if (result >= 1e11 || (result < 1e-9 && result > 0) || result <= -1e10 || (result > -1e-8 && result < 0)) {
+    if (result === Infinity) {
+        input1 = null;
+        outputBot.innerText = '呪術廻戦';
+    }
+    else if (result >= 1e11 || (result < 1e-9 && result > 0) || result <= -1e10 || (result > -1e-8 && result < 0)) {
         input1 = null;
         string = `${result.toExponential(5)}`;
-        outputBot.innerText = string.replace(/.?0+e/, 'e');
-    }
-    else if (result === Infinity) {
-        input1 = null;
-        outputBot.innerText = result;
+        outputBot.innerText = string.replace(/\.?0+e/, 'e');
     }
     else {
         string = result.toString();
@@ -192,5 +241,31 @@ function fitNumber(string) {
         return '1';
     }
     return string.substr(0, 10) + `${+string.charAt(10) + 1}`;
+}
 
+function keysupport(key) {
+    if(/\d/.test(key)){
+        chooseInput(key);
+    }
+    else if(/\/|\+|-|\*/.test(key)){
+        getOperator(key);
+    }
+    else if(key === 'Enter' || key === '='){
+        equalFun();
+    }
+    else if(key === 'Escape'){
+        clear();
+    }
+    else if(key === 'Backspace'){
+        modifyInput(deleteNum);
+    }
+    else if(key === '%'){
+        modifyInput(percentFun);
+    }
+    else if(key === '.'){
+        modifyInput(decimalFun);
+    }
+    else if(key === 's'){
+        modifyInput(signFun);
+    }
 }
