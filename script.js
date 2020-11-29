@@ -263,6 +263,7 @@ function keysupport(key) {
     buttons.forEach(object => {
         if (object.attributes['data-key'].value === key) {
             object.click();
+            return;
         }
     })
     if (key === 'Enter') {
