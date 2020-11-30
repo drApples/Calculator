@@ -13,7 +13,6 @@ let input1 = '0';
 let input2 = null;
 let operator = null;
 let result = null;
-let object;
 
 percentage.addEventListener('click', () => modifyInput(percentFun));
 addDecimal.addEventListener('click', () => modifyInput(decimalFun));
@@ -21,7 +20,7 @@ changeSign.addEventListener('click', () => modifyInput(signFun));
 clearAll.addEventListener('click', clear);
 deleteNumber.addEventListener('click', () => modifyInput(deleteNum));
 equal.addEventListener('click', equalFun);
-window.addEventListener('keydown', e => keysupport(e.key));
+window.addEventListener('keydown', e => keySupport(e.key));
 window.addEventListener("mousedown", (e) => {
     e.preventDefault();
   });
@@ -262,7 +261,7 @@ function addTransition(object) {
     setTimeout(() => object.classList.remove('transition'), 150);
 }
 
-function keysupport(key) {
+function keySupport(key) {
     buttons.forEach(object => {
         if (object.attributes['data-key'].value === key) {
             object.click();
