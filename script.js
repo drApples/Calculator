@@ -22,6 +22,9 @@ clearAll.addEventListener('click', clear);
 deleteNumber.addEventListener('click', () => modifyInput(deleteNum));
 equal.addEventListener('click', equalFun);
 window.addEventListener('keydown', e => keysupport(e.key));
+window.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+  });
 
 numbers.forEach(element => element.addEventListener('click', e => chooseInput(e.target.id)));
 operators.forEach(element => element.addEventListener('click', e => getOperator(e.target.attributes['data-symbol'].value)));
